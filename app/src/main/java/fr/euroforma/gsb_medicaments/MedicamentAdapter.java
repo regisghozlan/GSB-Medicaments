@@ -1,5 +1,8 @@
 package fr.euroforma.gsb_medicaments;
 
+
+
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +43,10 @@ public class MedicamentAdapter extends ArrayAdapter<Medicament> {
         tvStatutadministratif.setText(medicament.getStatutAdministratif());
 
         // Return the completed view to render on screen
+
+        int backgroundColor = (position % 2 == 0) ? getContext().getResources().getColor(R.color.colorLight) : getContext().getResources().getColor(R.color.colorDark);
+        convertView.setBackgroundColor(backgroundColor);
+
         return convertView;
     }
 }

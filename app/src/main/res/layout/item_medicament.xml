@@ -3,9 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#F1F8E9"
+    android:background="#4000D4"
     android:padding="8dp">
-
 
     <TextView
         android:id="@+id/tvCodeCIS"
@@ -18,6 +17,7 @@
         android:id="@+id/tvDenomination"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:text="Denomination: " />
 
     <TextView
