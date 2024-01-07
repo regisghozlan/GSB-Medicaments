@@ -1,6 +1,8 @@
 package fr.euroforma.gsb_medicaments;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -64,12 +66,26 @@ public class MainActivity extends AppCompatActivity {
         String titulaires = editTextTitulaires.getText().toString().trim();
         String denominationSubstance = editTextDenominationSubstance.getText().toString().trim();
         String voiesAdmin = spinnerVoiesAdmin.getSelectedItem().toString();
-
+        cacherClavier();
         // TODO: Use dbHelper to fetch search results and update the ListView
         List<Medicament> searchResults = dbHelper.searchMedicaments(denomination, formePharmaceutique, titulaires, denominationSubstance, voiesAdmin);
 
         // TODO: Create and set an adapter for the ListView to display search results
         MedicamentAdapter adapter = new MedicamentAdapter(this, searchResults);
         listViewResults.setAdapter(adapter);
+    }
+
+    private void cacherClavier() {
+        // Obtenez le gestionnaire de fenêtre
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // Obtenez la vue actuellement focalisée, qui devrait être la vue avec le clavier
+        View vueCourante = getCurrentFocus();
+
+        // Vérifiez si la vue est non nulle pour éviter les erreurs
+        if (vueCourante != null) {
+            // Masquez le clavier
+            imm.hideSoftInputFromWindow(vueCourante.getWindowToken(), 0);
+        }
     }
 }

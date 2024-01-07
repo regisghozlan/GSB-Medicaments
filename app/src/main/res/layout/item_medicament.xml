@@ -3,12 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="#F1F8E9"
     android:padding="8dp">
+
 
     <TextView
         android:id="@+id/tvCodeCIS"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:text="Code_CIS: " />
 
     <TextView
@@ -34,5 +37,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Titulaires: " />
+    <TextView
+        android:id="@+id/tvStatutAdministratif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Staut administratif: " />
+
 
 </LinearLayout>

@@ -6,6 +6,8 @@ public class Medicament {
     private String formePharmaceutique;
     private String voiesAdmin;
     private String titulaires;
+    private String statutAdministratif;
+
 
     // Constructeur
 
@@ -36,6 +38,13 @@ public class Medicament {
         this.formePharmaceutique = formePharmaceutique;
     }
 
+    public void setStatutAdministratif(String statutAdministratif) {
+        this.statutAdministratif = statutAdministratif;
+    }
+    public String getStatutAdministratif() {
+        return statutAdministratif;
+    }
+
     // Getter et Setter pour voiesAdmin
     public String getVoiesAdmin() {
         return voiesAdmin;
@@ -53,5 +62,7 @@ public class Medicament {
     public void setTitulaires(String titulaires) {
         this.titulaires = titulaires;
     }
+
+
 }
 
