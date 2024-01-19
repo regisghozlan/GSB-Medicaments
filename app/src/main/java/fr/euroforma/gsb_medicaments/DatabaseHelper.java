@@ -100,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         selectionArgs.add("%" + denomination + "%");
         selectionArgs.add("%" + formePharmaceutique + "%");
         selectionArgs.add( "%" + titulaires + "%");
-        selectionArgs.add( "%" + removeAccents(denominationSubstance) + "%");
+        selectionArgs.add( "%" + denominationSubstance + "%");
         SQLiteDatabase db = this.getReadableDatabase();
         String finSQL ="";
 
@@ -216,18 +216,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-         private String removeAccents(String input) {
-            if (input == null) {
-                return null;
-            }
 
-            // Normalisation en forme de décomposition (NFD)
-            String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-
-            // Remplacement des caractères diacritiques
-            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-            return pattern.matcher(normalized).replaceAll("");
-        }
 
 
 

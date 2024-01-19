@@ -10,7 +10,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.Normalizer;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         String denomination = editTextDenomination.getText().toString().trim();
         String formePharmaceutique = editTextFormePharmaceutique.getText().toString().trim();
         String titulaires = editTextTitulaires.getText().toString().trim();
-        String denominationSubstance = editTextDenominationSubstance.getText().toString().trim();
+        String denominationSubstance = removeAccents(editTextDenominationSubstance.getText().toString().trim());
         String voiesAdmin = spinnerVoiesAdmin.getSelectedItem().toString();
         cacherClavier();
         // TODO: Use dbHelper to fetch search results and update the ListView
@@ -87,5 +90,17 @@ public class MainActivity extends AppCompatActivity {
             // Masquez le clavier
             imm.hideSoftInputFromWindow(vueCourante.getWindowToken(), 0);
         }
+    }
+    private String removeAccents(String input) {
+        if (input == null) {
+            return null;
+        }
+
+        // Normalisation en forme de décomposition (NFD)
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+
+        // Remplacement des caractères diacritiques
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(normalized).replaceAll("");
     }
 }

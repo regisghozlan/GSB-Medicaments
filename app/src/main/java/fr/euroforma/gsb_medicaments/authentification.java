@@ -2,6 +2,7 @@ package fr.euroforma.gsb_medicaments;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -15,10 +16,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.SecureRandom;
 
 public class authentification extends AppCompatActivity {
     private EditText editTextCodeV;
     private static final String SECURETOKEN = "BethElicheva5";
+    private static final String PREF_NAME = "UserPrefs";
+    private static final String KEY_USER_STATUS = "userStatus";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,21 @@ public class authentification extends AppCompatActivity {
         SendKeyTask sendKeyTask = new SendKeyTask(getApplicationContext());
         sendKeyTask.execute(codeV, secureKey, token);
         //sendKeyByEmail(codeV, secureKey, token);
+    }
+
+
+    // Fonction pour stocker le statut de l'utilisateur
+    private void setUserStatus(String status) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_USER_STATUS, status);
+        editor.apply();
+    }
+
+    // Fonction pour récupérer le statut de l'utilisateur
+    private String getUserStatus() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        return sharedPreferences.getString(KEY_USER_STATUS, "");
     }
 
 
