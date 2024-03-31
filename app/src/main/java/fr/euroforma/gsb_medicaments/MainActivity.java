@@ -1,5 +1,7 @@
 package fr.euroforma.gsb_medicaments;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -51,6 +53,17 @@ public class MainActivity extends AppCompatActivity {
                 performSearch();
             }
         });
+
+        listViewResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // Get the selected item
+                Medicament selectedMedicament = (Medicament) adapterView.getItemAtPosition(position);
+                // Show composition of the selected medicament
+                afficherCompositionMedicament(selectedMedicament);
+            }
+        }
+        );
     }
 
     private void setupVoiesAdminSpinner() {
@@ -102,5 +115,48 @@ public class MainActivity extends AppCompatActivity {
         // Remplacement des caractères diacritiques
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(normalized).replaceAll("");
+    }
+    private void afficherCompositionMedicament_old(Medicament medicament) {
+        // Ici, vous pouvez implémenter la logique pour afficher la composition du médicament
+        // Vous pouvez utiliser une boîte de dialogue, une nouvelle activité ou une autre méthode selon vos besoins.
+        // Par exemple, une boîte de dialogue simple pour afficher la composition :
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Composition de " + medicament.getDenomination());
+        builder.setMessage("Code CIS: " + medicament.getCodeCIS() + "\n" +
+                "Forme pharmaceutique: " + medicament.getFormePharmaceutique() + "\n" +
+                "Voies d'administration: " + medicament.getVoiesAdmin() + "\n" +
+                "Titulaires: " + medicament.getTitulaires() + "\n" +
+                "Statut administratif: " + medicament.getStatutAdministratif());
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void afficherCompositionMedicament(Medicament medicament) {
+        List<String> composition = dbHelper.getCompositionMedicament(medicament.getCodeCIS());
+
+        // Afficher la composition du médicament dans une boîte de dialogue ou autre méthode d'affichage
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Composition de " + medicament.getCodeCIS());
+        if (composition.isEmpty()) {
+            builder.setMessage("Aucune composition disponible pour ce médicament.");
+        } else {
+            StringBuilder compositionText = new StringBuilder();
+            for (String item : composition) {
+                compositionText.append(item).append("\n");
+            }
+            builder.setMessage(compositionText.toString());
+        }
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

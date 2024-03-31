@@ -2,6 +2,7 @@ package fr.euroforma.gsb_medicaments;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class SendKeyTask extends AsyncTask<String, Void, String> {
         String token = params[2];
 
         String urlString = "http://ppe.formationsiparis.fr/sendmail.php?codeV=" + codeV + "&secureKey=" + secureKey + "&Token=" + token;
-
+        Log.d("TAG", "URL: "+urlString);
         try {
             URL url = new URL(urlString);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

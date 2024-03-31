@@ -34,13 +34,16 @@ public class MedicamentAdapter extends ArrayAdapter<Medicament> {
         TextView tvVoiesAdmin = convertView.findViewById(R.id.tvVoiesAdmin);
         TextView tvTitulaires = convertView.findViewById(R.id.tvTitulaires);
         TextView tvStatutadministratif = convertView.findViewById(R.id.tvStatutAdministratif);
+        TextView tvNb_Molecule = convertView.findViewById(R.id.nb_molecule);
 
         tvCodeCIS.setText("CIS: "+ String.valueOf(medicament.getCodeCIS()));
         tvDenomination.setText("Dénomination : " + medicament.getDenomination());
         tvFormePharmaceutique.setText(medicament.getFormePharmaceutique());
         tvVoiesAdmin.setText(medicament.getVoiesAdmin());
-        tvTitulaires.setText(medicament.getTitulaires());
+        tvTitulaires.setText("Fabricant : " + medicament.getTitulaires());
         tvStatutadministratif.setText(medicament.getStatutAdministratif());
+
+        tvNb_Molecule.setText(medicament.getNb_molecule()+ pluriels(Integer.parseInt(medicament.getNb_molecule())," molecule"));
 
         // Return the completed view to render on screen
 
@@ -48,6 +51,13 @@ public class MedicamentAdapter extends ArrayAdapter<Medicament> {
         convertView.setBackgroundColor(backgroundColor);
 
         return convertView;
+    }
+    static String pluriels(int nbr, String mot){
+        String un_s="";
+        if (nbr>1){
+            un_s="s";
+        }
+      return (mot+un_s);
     }
 }
 

@@ -1,9 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity_detail">
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/header1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Section 1"
+        android:textSize="18sp"
+        android:clickable="true"
+        android:onClick="toggleSection"/>
+
+    <LinearLayout
+        android:id="@+id/section1Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingLeft="16dp">
+
+        <!-- Contenu de la section 1 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contenu de la section 1"/>
+
+        <!-- Ajoutez d'autres vues ici selon vos besoins -->
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/header2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Section 2"
+        android:textSize="18sp"
+        android:clickable="true"
+        android:onClick="toggleSection"/>
+
+    <LinearLayout
+        android:id="@+id/section2Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingLeft="16dp">
+
+        <!-- Contenu de la section 2 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contenu de la section 2"/>
+
+        <!-- Ajoutez d'autres vues ici selon vos besoins -->
+
+    </LinearLayout>
+
+    <!-- Ajoutez d'autres sections si nécessaire -->
+
+</LinearLayout>

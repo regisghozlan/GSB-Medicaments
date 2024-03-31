@@ -1,22 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".authentification">
 
     <EditText
-        android:id="@+id/editTextCodeV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Entrez le codeV"/>
-
-    <Button
-        android:id="@+id/buttonSend"
+        android:id="@+id/codeVisiteur"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextCodeV"
-        android:layout_marginTop="16dp"
-        android:text="Envoyer"
-        android:onClick="ButtonClick"/>
-</RelativeLayout>
+        android:layout_gravity="center"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="Code visiteur"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="161dp" />
+
+    <Button
+        android:id="@+id/buttonValider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="clickValider"
+        android:text="OK" />
+
+
+    <LinearLayout
+        android:id="@+id/partieDeux"
+        android:layout_width="409dp"
+        android:layout_height="182dp"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="437dp">
+
+
+        <EditText
+            android:id="@+id/saisieCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:hint="Code aléatoire"
+            android:ems="10"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/buttonOk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="161dp"
+            android:onClick="clickOk"
+            android:text="OK" />
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/quitter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="clickQuitter"
+        android:text="Quitter" />
+
+</LinearLayout>

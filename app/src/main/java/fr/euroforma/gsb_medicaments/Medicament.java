@@ -8,6 +8,7 @@ public class Medicament {
     private String titulaires;
     private String statutAdministratif;
 
+    private String Nb_Molecule;
 
     // Constructeur
 
@@ -63,6 +64,13 @@ public class Medicament {
         this.titulaires = titulaires;
     }
 
+    public String getNb_molecule() {
+        return Nb_Molecule;
+    }
 
+    public void setNb_molecule(String Nb_Molecule)
+    {
+        this.Nb_Molecule = Nb_Molecule;
+    }
 }
 

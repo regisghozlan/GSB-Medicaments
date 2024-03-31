@@ -43,5 +43,9 @@
         android:layout_height="wrap_content"
         android:text="Staut administratif: " />
 
-
+    <TextView
+        android:id="@+id/nb_molecule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="nb_molecule: " />
 </LinearLayout>
