@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,6 +9,19 @@
     tools:context=".MainActivity">
 
     <!-- EditText for entering Denomination_du_medicament -->
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send"
+        android:onClick="sendmycontact">
+    </Button>
+    <ImageButton
+        android:id="@+id/infoButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_info_details" />
+
     <EditText
         android:id="@+id/editTextDenomination"
         android:layout_width="match_parent"
@@ -56,4 +70,5 @@
         android:scrollbars="vertical"
         android:layout_height="0dp"
         android:layout_weight="1"/>
+
 </LinearLayout>

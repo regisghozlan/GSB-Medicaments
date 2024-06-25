@@ -9,14 +9,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -26,24 +32,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "medicaments.db";
     private static final int DATABASE_VERSION = 2;
     private String DATABASE_PATH;
-
+    private static final String LOG_FILE_NAME = "application_log.txt";
+    private static final String LOG_FILE_PATH = "logs/";
     private static final String PREMIERE_VOIE = "Séléctionnez une voie d'administration";
     private static DatabaseHelper sInstance;
 
     public static synchronized DatabaseHelper getInstance(Context context) {
-        if (sInstance == null) { sInstance = new DatabaseHelper(context); }
+        if (sInstance == null) {
+            sInstance = new DatabaseHelper(context);
+        }
         return sInstance;
     }
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.mycontext=context;
+        this.mycontext = context;
         String filesDir = context.getFilesDir().getPath(); // /data/data/com.package.nom/files/
         DATABASE_PATH = filesDir.substring(0, filesDir.lastIndexOf("/")) + "/databases/"; // /data/data/com.package.nom/databases/
 
         // Si la bdd n'existe pas dans le dossier de l'app
         if (!checkdatabase()) {
             // copy db de 'assets' vers DATABASE_PATH
-            Log.d("APP","BDD a copier");
+            Log.d("APP", "BDD a copier");
             copydatabase();
 
         }
@@ -57,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < newVersion){
+        if (oldVersion < newVersion) {
             //Log.d("debug", "onUpgrade() : oldVersion=" + oldVersion + ",newVersion=" + newVersion);
             mycontext.deleteDatabase(DATABASE_NAME);
             copydatabase();
@@ -87,44 +97,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return voiesAdminList;
     }
 
-        private boolean checkdatabase() {
-            // retourne true/false si la bdd existe dans le dossier de l'app
-            File dbfile = new File(DATABASE_PATH + DATABASE_NAME);
+    private boolean checkdatabase() {
+        // retourne true/false si la bdd existe dans le dossier de l'app
+        File dbfile = new File(DATABASE_PATH + DATABASE_NAME);
 
-            return dbfile.exists();
-        }
-    public List<Medicament> searchMedicaments(String denomination, String formePharmaceutique, String titulaires, String denominationSubstance, String voiesAdmin)
-        {
+        return dbfile.exists();
+    }
+
+    public List<Medicament> searchMedicaments(String denomination, String formePharmaceutique, String titulaires, String denominationSubstance, String voiesAdmin) {
         List<Medicament> medicamentList = new ArrayList<>();
         ArrayList<String> selectionArgs = new ArrayList<>();
         selectionArgs.add("%" + denomination + "%");
         selectionArgs.add("%" + formePharmaceutique + "%");
-        selectionArgs.add( "%" + titulaires + "%");
-        selectionArgs.add( "%" + denominationSubstance + "%");
+        selectionArgs.add("%" + titulaires + "%");
+        selectionArgs.add("%" + denominationSubstance + "%");
         SQLiteDatabase db = this.getReadableDatabase();
-        String finSQL ="";
-       // String Sql_nbmolecule ="" ;
+        String finSQL = "";
+        // String Sql_nbmolecule ="" ;
 
-            if (!voiesAdmin.equals(PREMIERE_VOIE)){
-                finSQL ="AND  Voies_dadministration LIKE ?";
-                selectionArgs.add("%"+voiesAdmin+"%");
+        if (!voiesAdmin.equals(PREMIERE_VOIE)) {
+            finSQL = "AND  Voies_dadministration LIKE ?";
+            selectionArgs.add("%" + voiesAdmin + "%");
         }
- String SQLSubstance = "SELECT CODE_CIS FROM CIS_COMPO_bdpm WHERE replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(upper(Denomination_substance), 'Â','A'),'Ä','A'),'À','A'),'É','E'),'Á','A'),'Ï','I'), 'Ê','E'),'È','E'),'Ô','O'),'Ü','U'), 'Ç','C' ) LIKE ?" ;
+        String SQLSubstance = "SELECT CODE_CIS FROM CIS_COMPO_bdpm WHERE replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(upper(Denomination_substance), 'Â','A'),'Ä','A'),'À','A'),'É','E'),'Á','A'),'Ï','I'), 'Ê','E'),'È','E'),'Ô','O'),'Ü','U'), 'Ç','C' ) LIKE ?";
 //String SQLSubstance = "SELECT CODE_CIS FROM CIS_COMPO_bdpm WHERE Denomination_substance COLLATE latin1_general_cs_ai LIKE ?" ;
 
-            // La requête SQL de recherche
+        // La requête SQL de recherche
         String query = "SELECT *,(select count(*) from CIS_COMPO_bdpm c where c.Code_CIS=m.Code_CIS) as nb_molecule FROM CIS_bdpm m  WHERE " +
                 "Denomination_du_medicament LIKE ? AND " +
                 "Forme_pharmaceutique LIKE ? AND " +
                 "Titulaires LIKE ? AND " +
-                "Code_CIS IN (" +SQLSubstance+ ")" +
+                "Code_CIS IN (" + SQLSubstance + ")" +
                 finSQL;
 
         // Les valeurs à remplacer dans la requête
 
 
-           Cursor  cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
-
+        Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
 
 
         if (cursor.moveToFirst()) {
@@ -146,12 +155,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 medicament.setVoiesAdmin(voiesAdminMedicament);
                 medicament.setTitulaires(titulairesMedicament);
                 medicament.setStatutAdministratif(statutAdministratif);
-                medicament.setNb_molecule(CountMolecule.toString());
+                // medicament.setNb_molecule(CountMolecule.toString());
+                medicament.setNb_molecule(String.valueOf(getNombreMolecules(codeCIS)));
                 // Ajouter l'objet Medicament à la liste
                 medicamentList.add(medicament);
             } while (cursor.moveToNext());
-        }
-        else {
+        } else {
             Toast.makeText(mycontext, "Aucun résultat", Toast.LENGTH_LONG).show();
 
 
@@ -163,19 +172,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return medicamentList;
     }
 
+    public int getNombreMolecules(int codeCIS) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select count(*) from CIS_COMPO_bdpm  where Code_CIS=?", new String[]{String.valueOf(codeCIS)});
+        cursor.moveToFirst();
+        int nb = cursor.getInt(0);
+        return (nb);
+    }
 
     public List<String> getCompositionMedicament(int codeCIS) {
         List<String> compositionList = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM CIS_compo_bdpm WHERE Code_CIS = ?", new String[]{String.valueOf(codeCIS)});
-int i=0;
+        int i = 0;
         if (cursor.moveToFirst()) {
             do {
                 i++;
                 String substance = cursor.getString(cursor.getColumnIndex("Denomination_substance"));
                 String dosage = cursor.getString(cursor.getColumnIndex("Dosage_substance"));
-                compositionList.add(i+":"+substance + "(" + dosage + ")");
+                compositionList.add(i + ":" + substance + "(" + dosage + ")");
             } while (cursor.moveToNext());
         }
 
@@ -183,6 +199,32 @@ int i=0;
         db.close();
 
         return compositionList;
+    }
+
+    public List<String> getPresentationMedicament(int codeCIS) {
+        List<String> presentationList = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM CIS_CIP_bdpm WHERE Code_CIS = ?", new String[]{String.valueOf(codeCIS)});
+        int i = 0;
+        if (cursor.moveToFirst()) {
+            do {
+                i++;
+                String libellePresentation = cursor.getString(cursor.getColumnIndex("Libelle_presentation"));
+                presentationList.add(i + ":" + libellePresentation);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return presentationList;
+    }
+
+    public Cursor performQuery(String cisCode) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT gener.id _id, m.Code_CIS,Libelle_generic from CIS_bdpm m inner JOIN CIS_GENER_bdpm gener on m.Code_CIS = gener.Code_CIS WHERE Statut_administratif_de_lAMM='Autorisation active' AND gener.Code_CIS= ?";
+        return db.rawQuery(query, new String[]{cisCode});
     }
 
     private void copydatabase() {
@@ -198,8 +240,8 @@ int i=0;
 
             // dossier de destination
             File pathFile = new File(DATABASE_PATH);
-            if(!pathFile.exists()) {
-                if(!pathFile.mkdirs()) {
+            if (!pathFile.exists()) {
+                if (!pathFile.mkdirs()) {
                     Toast.makeText(mycontext, "Erreur : copydatabase(), pathFile.mkdirs()", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -216,34 +258,67 @@ int i=0;
             }
 
             // Fermeture
-            Log.d("APP","BDD copiée");
+            Log.d("APP", "BDD copiée");
             myOutput.flush();
             myOutput.close();
             myInput.close();
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            Log.d("ERROR","erreur copie de la base");
+            Log.d("ERROR", "erreur copie de la base");
             Toast.makeText(mycontext, "Erreur : copydatabase()", Toast.LENGTH_SHORT).show();
         }
 
         // on greffe le numéro de version
-        try{
+        try {
             SQLiteDatabase checkdb = SQLiteDatabase.openDatabase(DATABASE_PATH + DATABASE_NAME, null, SQLiteDatabase.OPEN_READWRITE);
             checkdb.setVersion(DATABASE_VERSION);
-        }
-        catch(SQLiteException e) {
+        } catch (SQLiteException e) {
             // bdd n'existe pas
         }
 
     }
 
+    public void writeToLogFile(String logEntry) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String timestamp = sdf.format(new Date());
 
+        // Ajouter le timestamp au début de l'entrée de log
+        File logDirectory = new File(mycontext.getFilesDir(), LOG_FILE_PATH);
+        if (!logDirectory.exists()) {
+            logDirectory.mkdirs();
+        }
 
-
-
-
-
+        File logFile = new File(logDirectory, LOG_FILE_NAME);
+        try {
+            FileOutputStream outputStream = new FileOutputStream(logFile, true);
+            outputStream.write((timestamp + " - " + logEntry + "\n").getBytes());
+            outputStream.close();
+        } catch (IOException e) {
+            Log.e("LogWriter", "Error writing to log file", e);
+        }
     }
+
+    private String readLogFile() {
+        File logDirectory = new File(mycontext.getFilesDir(), LOG_FILE_PATH);
+        File logFile = new File(logDirectory, LOG_FILE_NAME);
+        StringBuilder logContent = new StringBuilder();
+
+        try {
+            FileInputStream inputStream = new FileInputStream(logFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                logContent.append(line).append("\n");
+            }
+            reader.close();
+        } catch (IOException e) {
+            Log.e("LogReader", "Error reading log file", e);
+        }
+
+        return logContent.toString();
+    }
+}
+
+
 

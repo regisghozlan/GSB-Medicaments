@@ -11,13 +11,13 @@ public class MedicamentTest  {
         // Context of the app under test.
         Medicament medicament = new Medicament();
         medicament.setCodeCIS(1234);
-        medicament.setDenomination("denominationMedicament");
-        medicament.setFormePharmaceutique("formePharmaceutiqueMedicament");
-        medicament.setVoiesAdmin("voiesAdminMedicament");
-        medicament.setTitulaires("titulairesMedicament");
-        medicament.setStatutAdministratif("statutAdministratif");
-        medicament.setNb_molecule("NbMolecule");
-        assertEquals("denominationMedicament", medicament.getDenomination());
+        medicament.setDenomination("Dolipran");
+        medicament.setFormePharmaceutique("Fake formePharmaceutiqueMedicament");
+        medicament.setVoiesAdmin("Fake voiesAdminMedicament");
+        medicament.setTitulaires("Fake titulairesMedicament");
+        medicament.setStatutAdministratif("Fake statutAdministratif");
+        medicament.setNb_molecule("Fake NbMolecule");
+        assertEquals("Dolipran", medicament.getDenomination());
 
     }
 }

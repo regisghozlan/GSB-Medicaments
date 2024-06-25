@@ -19,9 +19,10 @@ public class authentification extends AppCompatActivity {
 
     private static final String PREF_NAME = "UserPrefs";
     private static final String KEY_USER_STATUS = "userStatus";
-    private static final String SECURETOKEN = "BethElicheva5";
-    private EditText codeVisiteur,  saisieCode;
+    private static final String KEY_USER_NAME = "username";
 
+    private static final String SECURETOKEN = "BethElicheva5";
+    private EditText codeVisiteur,  saisieCode, NomUtilisateur;
     private Button buttonValider, buttonOK;
     private String secureKey;
 
@@ -35,11 +36,11 @@ public class authentification extends AppCompatActivity {
         setContentView(R.layout.activity_authentification);
         setUserStatus("KO");
 
-
         codeVisiteur = findViewById(R.id.codeVisiteur);
         buttonValider = findViewById(R.id.buttonValider);
         saisieCode = findViewById(R.id.saisieCode);
         buttonOK = findViewById(R.id.buttonOk);
+        NomUtilisateur = findViewById(R.id.UserName);
 
     }
 
@@ -68,6 +69,7 @@ public class authentification extends AppCompatActivity {
         String str2 = saisieCode.getText().toString();
         if (secureKey.equals(str2)){
             String status1 = "Authentifié";
+            setUserName(NomUtilisateur.getText().toString());
             setUserStatus(status1);
             //Log.d("COMPARE", "OK");
             Toast toast = Toast.makeText(this,"Authentification réussie", Toast.LENGTH_LONG);
@@ -85,6 +87,14 @@ public class authentification extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_USER_STATUS, status);
+       // editor.putString("NOM",)
+        editor.apply();
+    }
+    private void setUserName(String lenom) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_USER_NAME, lenom);
+        // editor.putString("NOM",)
         editor.apply();
     }
 

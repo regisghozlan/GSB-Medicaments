@@ -2,6 +2,9 @@ package fr.euroforma.gsb_medicaments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -9,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,18 +22,28 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String PREF_NAME = "UserPrefs";
 
     private EditText editTextDenomination, editTextFormePharmaceutique, editTextTitulaires, editTextDenominationSubstance;
     private Spinner spinnerVoiesAdmin;
     private Button btnSearch;
+    private ImageButton infoButton;
+
     private ListView listViewResults;
     private DatabaseHelper dbHelper;
+    private static final String KEY_USER_STATUS = "userStatus";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        infoButton = findViewById(R.id.infoButton);
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openInfoActivity();
+            }
+        });
         // Initialize UI components
         editTextDenomination = findViewById(R.id.editTextDenomination);
         editTextFormePharmaceutique = findViewById(R.id.editTextFormePharmaceutique);
@@ -65,7 +79,10 @@ public class MainActivity extends AppCompatActivity {
         }
         );
     }
-
+    private void openInfoActivity() {
+        Intent intent = new Intent(this, Info.class);
+        startActivity(intent);
+    }
     private void setupVoiesAdminSpinner() {
         // Fetch distinct Voies_dadministration data from the database and populate the spinner
         List<String> voiesAdminList = dbHelper.getDistinctVoiesAdmin();
@@ -85,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         cacherClavier();
         // TODO: Use dbHelper to fetch search results and update the ListView
         List<Medicament> searchResults = dbHelper.searchMedicaments(denomination, formePharmaceutique, titulaires, denominationSubstance, voiesAdmin);
-
+dbHelper.writeToLogFile("test");
         // TODO: Create and set an adapter for the ListView to display search results
         MedicamentAdapter adapter = new MedicamentAdapter(this, searchResults);
         listViewResults.setAdapter(adapter);
@@ -138,19 +155,34 @@ public class MainActivity extends AppCompatActivity {
     }
     private void afficherCompositionMedicament(Medicament medicament) {
         List<String> composition = dbHelper.getCompositionMedicament(medicament.getCodeCIS());
+        List<String> presentation = dbHelper.getPresentationMedicament(medicament.getCodeCIS());
 
         // Afficher la composition du médicament dans une boîte de dialogue ou autre méthode d'affichage
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Composition de " + medicament.getCodeCIS());
+        StringBuilder compositionText = new StringBuilder();
+
         if (composition.isEmpty()) {
-            builder.setMessage("Aucune composition disponible pour ce médicament.");
+            compositionText.append("aucune composition disponible pour ce médicament.").append("\n");
         } else {
-            StringBuilder compositionText = new StringBuilder();
+
             for (String item : composition) {
                 compositionText.append(item).append("\n");
             }
-            builder.setMessage(compositionText.toString());
+
+
         }
+        if (presentation.isEmpty()) {
+            compositionText.append("aucune presentation disponible pour ce médicament.").append("\n");
+        } else {
+
+            for (String item : presentation) {
+                compositionText.append(item).append("\n");
+            }
+
+
+        }
+         builder.setMessage(compositionText.toString());
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -158,5 +190,17 @@ public class MainActivity extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+
+    private boolean isUserAuthenticated() {
+
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+
+        // SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String userStatus = preferences.getString(KEY_USER_STATUS, "");
+
+        // Vérifiez si la chaîne d'état de l'utilisateur est "authentification=OK"
+        return "authentification=OK".equals(userStatus);
     }
 }

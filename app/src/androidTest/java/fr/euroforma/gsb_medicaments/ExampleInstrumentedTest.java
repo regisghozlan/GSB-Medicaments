@@ -51,18 +51,7 @@ public class ExampleInstrumentedTest {
     }
 
 
-    @Before
-    public void setUp() {
-        // Initialiser DatabaseHelper avant chaque test
-        Context context = ApplicationProvider.getApplicationContext();
-        databaseHelper = DatabaseHelper.getInstance(context);
-    }
 
-    @After
-    public void tearDown() {
-        // Fermer la base de données après chaque test
-        databaseHelper.close();
-    }
 
     @Test
     public void testGetDistinctVoiesAdmin() {
@@ -75,6 +64,31 @@ public class ExampleInstrumentedTest {
         assertTrue(voiesAdminList.get(0).equals("Séléctionnez une voie d'administration"));
 
         // Vous pouvez ajouter d'autres assertions pour vérifier le contenu de la liste
+    }
+    @Test
+    public void testsearchMedicaments() {
+       // Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        List<Medicament> maliste = databaseHelper.searchMedicaments("Aspirine","","UPSA","","ORALE");
+
+        // Vérifier que la liste n'est pas vide
+        assertFalse(maliste.isEmpty());
+
+        // Vérifier que la première entrée est "Séléctionnez une voie d'administration"
+        assertTrue(maliste.size()==4);
+
+        // Vous pouvez ajouter d'autres assertions pour vérifier le contenu de la liste
+    }
+    @Before
+    public void setUp() {
+        // Initialiser DatabaseHelper avant chaque test
+        Context context = ApplicationProvider.getApplicationContext();
+        databaseHelper = DatabaseHelper.getInstance(context);
+    }
+
+    @After
+    public void tearDown() {
+        // Fermer la base de données après chaque test
+        databaseHelper.close();
     }
 
 }

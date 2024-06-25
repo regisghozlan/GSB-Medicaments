@@ -27,6 +27,7 @@ public class Medicament {
     }
 
     public void setDenomination(String denomination) {
+
         this.denomination = denomination;
     }
 
@@ -65,7 +66,9 @@ public class Medicament {
     }
 
     public String getNb_molecule() {
+
         return Nb_Molecule;
+
     }
 
     public void setNb_molecule(String Nb_Molecule)

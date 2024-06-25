@@ -47,6 +47,14 @@
             android:hint="Code aléatoire"
             android:ems="10"
             android:inputType="text" />
+        <EditText
+            android:id="@+id/UserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:hint="Nom utilisateur"
+            android:ems="10"
+            android:inputType="text" />
 
         <Button
             android:id="@+id/buttonOk"
