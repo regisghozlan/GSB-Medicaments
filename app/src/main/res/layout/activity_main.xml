@@ -9,19 +9,8 @@
     tools:context=".MainActivity">
 
     <!-- EditText for entering Denomination_du_medicament -->
-    <Button
-        android:id="@+id/btnSend"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Send"
-        android:onClick="sendmycontact">
-    </Button>
-    <ImageButton
-        android:id="@+id/infoButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_menu_info_details" />
 
+  
     <EditText
         android:id="@+id/editTextDenomination"
         android:layout_width="match_parent"
@@ -54,6 +43,8 @@
         android:id="@+id/spinnerVoiesAdmin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:prompt="@string/voiesadministration"
+
         android:hint="Voies_dadministration"/>
 
     <!-- Button to trigger the search -->
@@ -61,6 +52,7 @@
         android:id="@+id/btnSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="clickValider"
         android:text="Search"/>
 
     <!-- ListView to display the search results -->

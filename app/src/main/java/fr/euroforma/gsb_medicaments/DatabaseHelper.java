@@ -1,5 +1,6 @@
 package fr.euroforma.gsb_medicaments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.Cursor;
@@ -53,8 +54,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Si la bdd n'existe pas dans le dossier de l'app
         if (!checkdatabase()) {
             // copy db de 'assets' vers DATABASE_PATH
-            Log.d("APP", "BDD a copier");
+            Log.d("EUROFORMA", "BDD a copier");
             copydatabase();
+
+        }
+        else {
+            Log.d("EUROFORMA", "BDD déjà existante");
 
         }
     }
@@ -81,7 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<String> voiesAdminList = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT upper(Voies_dadministration) FROM CIS_bdpm WHERE Voies_dadministration NOT LIKE '%;%' ORDER BY Voies_dadministration", null);
+        Cursor cursor = db.rawQuery("SELECT DISTINCT Voies_dadministration FROM CIS_bdpm WHERE Voies_dadministration NOT LIKE '%;%' ORDER BY Voies_dadministration", null);
         voiesAdminList.add(PREMIERE_VOIE);
         if (cursor.moveToFirst()) {
             do {
@@ -103,7 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return dbfile.exists();
     }
-
+    @SuppressLint("Range")
     public List<Medicament> searchMedicaments(String denomination, String formePharmaceutique, String titulaires, String denominationSubstance, String voiesAdmin) {
         List<Medicament> medicamentList = new ArrayList<>();
         ArrayList<String> selectionArgs = new ArrayList<>();
@@ -132,14 +137,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Les valeurs à remplacer dans la requête
 
-
+Log.d("SQL",query);
         Cursor cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
 
 
         if (cursor.moveToFirst()) {
             do {
                 // Récupérer les valeurs de la ligne actuelle
-                int codeCIS = cursor.getInt(cursor.getColumnIndex("Code_CIS"));
+               int codeCIS = cursor.getInt(cursor.getColumnIndex("Code_CIS"));
                 String denominationMedicament = cursor.getString(cursor.getColumnIndex("Denomination_du_medicament"));
                 String formePharmaceutiqueMedicament = cursor.getString(cursor.getColumnIndex("Forme_pharmaceutique"));
                 String voiesAdminMedicament = cursor.getString(cursor.getColumnIndex("Voies_dadministration"));
@@ -180,6 +185,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return (nb);
     }
 
+    @SuppressLint("Range")
     public List<String> getCompositionMedicament(int codeCIS) {
         List<String> compositionList = new ArrayList<>();
 
@@ -200,7 +206,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return compositionList;
     }
-
+    @SuppressLint("Range")
     public List<String> getPresentationMedicament(int codeCIS) {
         List<String> presentationList = new ArrayList<>();
 
@@ -230,6 +236,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void copydatabase() {
 
         final String outFileName = DATABASE_PATH + DATABASE_NAME;
+        Log.d("EUROFORMA",outFileName);
+        Log.d( "EUROFORMA", mycontext.getAssets().toString());
 
         //AssetManager assetManager = mycontext.getAssets();
         InputStream myInput;
@@ -237,7 +245,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             // Ouvre le fichier de la  bdd de 'assets' en lecture
             myInput = mycontext.getAssets().open(DATABASE_NAME);
-
+          //  mycontext.getAssets().toString();
             // dossier de destination
             File pathFile = new File(DATABASE_PATH);
             if (!pathFile.exists()) {

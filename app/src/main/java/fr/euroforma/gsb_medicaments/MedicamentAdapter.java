@@ -8,13 +8,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import java.util.List;
 
 public class MedicamentAdapter extends ArrayAdapter<Medicament> {
 
+    private OnButtonCClickListener onButtonCClickListener;
+    private OnButtonPClickListener onButtonPClickListener;
+
+    // Interface pour le bouton C
+    public interface OnButtonCClickListener {
+        void onButtonCClick(Medicament medicament);
+    }
+
+    // Interface pour le bouton P
+    public interface OnButtonPClickListener {
+        void onButtonPClick(Medicament medicament);
+    }
+
+    // Méthodes pour définir les écouteurs
+    public void setOnButtonCClickListener(OnButtonCClickListener listener) {
+        this.onButtonCClickListener = listener;
+    }
+
+    public void setOnButtonPClickListener(OnButtonPClickListener listener) {
+        this.onButtonPClickListener = listener;
+    }
     public MedicamentAdapter(Context context, List<Medicament> medicaments) {
         super(context, 0, medicaments);
+
+
     }
 
     @Override
@@ -36,6 +60,10 @@ public class MedicamentAdapter extends ArrayAdapter<Medicament> {
         TextView tvStatutadministratif = convertView.findViewById(R.id.tvStatutAdministratif);
         TextView tvNb_Molecule = convertView.findViewById(R.id.nb_molecule);
 
+        Button btnC = convertView.findViewById(R.id.btn_show_compo);
+        Button btnP = convertView.findViewById(R.id.btn_show_pres);
+
+
         tvCodeCIS.setText("CIS: "+ String.valueOf(medicament.getCodeCIS()));
         tvDenomination.setText("Dénomination : " + medicament.getDenomination());
         tvFormePharmaceutique.setText(medicament.getFormePharmaceutique());
@@ -45,10 +73,31 @@ public class MedicamentAdapter extends ArrayAdapter<Medicament> {
 
         tvNb_Molecule.setText(medicament.getNb_molecule()+ pluriels(Integer.parseInt(medicament.getNb_molecule())," molecule"));
 
+
+        btnC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onButtonCClickListener != null && medicament != null) {
+                    onButtonCClickListener.onButtonCClick(medicament);
+                }
+            }
+        });
+        btnP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onButtonPClickListener != null && medicament != null) {
+                    onButtonPClickListener.onButtonPClick(medicament);
+                }
+            }
+        });
+
         // Return the completed view to render on screen
 
         int backgroundColor = (position % 2 == 0) ? getContext().getResources().getColor(R.color.colorLight) : getContext().getResources().getColor(R.color.colorDark);
         convertView.setBackgroundColor(backgroundColor);
+
+
+
 
         return convertView;
     }

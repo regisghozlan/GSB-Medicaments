@@ -23,11 +23,11 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PREF_NAME = "UserPrefs";
-
     private EditText editTextDenomination, editTextFormePharmaceutique, editTextTitulaires, editTextDenominationSubstance;
     private Spinner spinnerVoiesAdmin;
     private Button btnSearch;
     private ImageButton infoButton;
+    private static final String USER_STATUS_OK = "Authentifié";
 
     private ListView listViewResults;
     private DatabaseHelper dbHelper;
@@ -37,13 +37,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        infoButton = findViewById(R.id.infoButton);
-        infoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openInfoActivity();
-            }
-        });
+        if (!isUserAuthenticated()) {
+            Intent authIntent = new Intent(this, authentification.class);
+            startActivity(authIntent);
+            finish();
+        }
         // Initialize UI components
         editTextDenomination = findViewById(R.id.editTextDenomination);
         editTextFormePharmaceutique = findViewById(R.id.editTextFormePharmaceutique);
@@ -99,13 +97,29 @@ public class MainActivity extends AppCompatActivity {
         String titulaires = editTextTitulaires.getText().toString().trim();
         String denominationSubstance = removeAccents(editTextDenominationSubstance.getText().toString().trim());
         String voiesAdmin = spinnerVoiesAdmin.getSelectedItem().toString();
+        MedicamentAdapter medicamentAdapter;
         cacherClavier();
         // TODO: Use dbHelper to fetch search results and update the ListView
         List<Medicament> searchResults = dbHelper.searchMedicaments(denomination, formePharmaceutique, titulaires, denominationSubstance, voiesAdmin);
-dbHelper.writeToLogFile("test");
+//dbHelper.writeToLogFile("test");
         // TODO: Create and set an adapter for the ListView to display search results
-        MedicamentAdapter adapter = new MedicamentAdapter(this, searchResults);
-        listViewResults.setAdapter(adapter);
+        medicamentAdapter  = new MedicamentAdapter(this, searchResults);
+        listViewResults.setAdapter(medicamentAdapter);
+
+        medicamentAdapter.setOnButtonCClickListener(new MedicamentAdapter.OnButtonCClickListener() {
+            @Override
+            public void onButtonCClick(Medicament medicament) {
+                // Votre logique ici
+                afficherCompositionMedicament(medicament);
+            }
+        });
+        medicamentAdapter.setOnButtonPClickListener(new MedicamentAdapter.OnButtonPClickListener() {
+            @Override
+            public void onButtonPClick(Medicament medicament) {
+                // Votre logique ici
+                afficherPresentationMedicament(medicament);
+            }
+        });
     }
 
     private void cacherClavier() {
@@ -153,9 +167,39 @@ dbHelper.writeToLogFile("test");
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+    private void afficherPresentationMedicament(Medicament medicament) {
+
+        List<String> presentation = dbHelper.getPresentationMedicament(medicament.getCodeCIS());
+
+        // Afficher la composition du médicament dans une boîte de dialogue ou autre méthode d'affichage
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Présentations de " + medicament.getCodeCIS());
+        StringBuilder presentationText = new StringBuilder();
+
+
+        if (presentation.isEmpty()) {
+            presentationText.append("aucune presentation disponible pour ce médicament.").append("\n");
+        } else {
+
+            for (String item : presentation) {
+                presentationText.append(item).append("\n");
+            }
+
+
+        }
+         builder.setMessage(presentationText.toString());
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void afficherCompositionMedicament(Medicament medicament) {
         List<String> composition = dbHelper.getCompositionMedicament(medicament.getCodeCIS());
-        List<String> presentation = dbHelper.getPresentationMedicament(medicament.getCodeCIS());
+    //    List<String> presentation = dbHelper.getPresentationMedicament(medicament.getCodeCIS());
 
         // Afficher la composition du médicament dans une boîte de dialogue ou autre méthode d'affichage
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -170,19 +214,9 @@ dbHelper.writeToLogFile("test");
                 compositionText.append(item).append("\n");
             }
 
-
         }
-        if (presentation.isEmpty()) {
-            compositionText.append("aucune presentation disponible pour ce médicament.").append("\n");
-        } else {
 
-            for (String item : presentation) {
-                compositionText.append(item).append("\n");
-            }
-
-
-        }
-         builder.setMessage(compositionText.toString());
+        builder.setMessage(compositionText.toString());
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -191,8 +225,6 @@ dbHelper.writeToLogFile("test");
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-
     private boolean isUserAuthenticated() {
 
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
@@ -201,6 +233,6 @@ dbHelper.writeToLogFile("test");
         String userStatus = preferences.getString(KEY_USER_STATUS, "");
 
         // Vérifiez si la chaîne d'état de l'utilisateur est "authentification=OK"
-        return "authentification=OK".equals(userStatus);
+        return USER_STATUS_OK.equals(userStatus);
     }
 }
